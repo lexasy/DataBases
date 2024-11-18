@@ -33,3 +33,11 @@ async def authentificate_user(user: User):
     if not db_user or not bcrypt_context.verify(user.password, db_user['password']):
         return None
     return db_user['username']
+
+async def get_user_id(username: str):
+    conn = await create_connection()
+    try:
+        user = await conn.fetchrow('SELECT user_id FROM users WHERE username = $1', username)
+        return user
+    finally:
+        await close_connection(conn)
