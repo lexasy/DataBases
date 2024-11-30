@@ -3,33 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Домашняя страница</title>
-    <!-- Подключение Bootstrap CSS -->
+    <title>Бронирование техники</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Курсач</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <form action="/logout" method="POST" class="form-inline">
-            <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/home">Курсач</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form action="/logout" method="POST" class="form-inline">
+                <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
+            </form>
+        </div>
+    </nav>    
+    <div class="container mt-5">
+        <h1 class="text-center">Управление бронированиями</h1>
+        
+        <h2 class="mt-4">Добавить бронирование</h2>
+        <form action="/home/add" method="post" class="mb-4">
+            <div class="form-group">
+                <label for="productSelect">Товары</label>
+                <select class="form-control" id="productSelect" required>
+                    <option value="" disabled selected>Выберите товар</option>
+                    {% for product in products %}
+                        <option>{{ product[0] }} {{ product[1] }} {{ product[2] }} {{ product[3] }} {{ product[4] }}</option>
+                    {% endfor %}
+                    <!-- <option value="2" data-price="200">Товар 2 - 200 руб.</option>
+                    <option value="3" data-price="300">Товар 3 - 300 руб.</option> -->
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" name="description" class="form-control" placeholder="Описание" required>
+            </div>
+            <div class="form-group">
+                <input type="number" name="price" class="form-control" placeholder="Цена" required>
+            </div>
+            <div class="form-group">
+                <input type="number" name="stock" class="form-control" placeholder="Количество" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Сделать бронирование</button>
         </form>
+
+        <!-- <h2>Обновить продукт</h2>
+        <form action="/home/update" method="post" class="mb-4">
+            <div class="form-group">
+                <input type="number" name="id" class="form-control" placeholder="ID продукта" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="name" class="form-control" placeholder="Новое название" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="description" class="form-control" placeholder="Новое описание" required>
+            </div>
+            <div class="form-group">
+                <input type="number" name="price" class="form-control" placeholder="Новая цена" required>
+            </div>
+            <div class="form-group">
+                <input type="number" name="stock" class="form-control" placeholder="Новое количество" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Обновить продукт</button>
+        </form> -->
+
+        <h2>Удалить бронирование</h2>
+        <form action="/home/delete" method="post" class="mb-4">
+            <div class="form-group">
+                <input type="number" name="id" class="form-control" placeholder="ID продукта" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Удалить бронирование</button>
+        </form>
+
+        <h2>Список бронирований</h2>
+        <ul class="list-group">
+            {% for product in products %}
+                <li class="list-group-item">
+                    {{ product.name }} - {{ product.description }} - ${{ product.price }} - Остаток: {{ product.stock }}
+                </li>
+            {% endfor %}
+        </ul>
     </div>
-</nav>
-
-<div class="container mt-5">
-    <h1>Добро пожаловать на домашнюю страницу!</h1>
-    <p>Здесь вы можете найти информацию о нашем сайте и услугах.</p>
-    <p>Пожалуйста, используйте навигационное меню для перехода по страницам.</p>
-</div>
-
-<!-- Подключение Bootstrap JS и jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>    
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

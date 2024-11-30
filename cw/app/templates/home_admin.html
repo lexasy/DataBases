@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="/static/css/styles.css" -->
+    <style>
+        .suggestions {
+            position: absolute;
+            z-index: 1000;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .suggestion-item {
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/home">Курсач</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form action="/logout" method="POST" class="form-inline">
+                <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
+            </form>
+        </div>
+    </nav>    
+    <div class="container mt-5">
+        <h1 class="text-center">Управление базой данных</h1>
+
+        <h2 class="mt-4">Добавить новую технику</h2>
+        <form class="mb-4" id="add_appliance_Form">
+            <div class="form-group">
+                <label>Наименование товара</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Введите наименование товара" required>
+            </div>
+            <div class="form-group">
+                <label>Бренды</label>
+                <select class="form-control" id="productSelect" name="brand" id="brand" required>
+                    <option value="" disabled selected>Выберите бренд</option>
+                    {% for brand in brands %}
+                        <option>{{ brand }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Категории</label>
+                <select class="form-control" id="productSelect" name="category" id="category" required>
+                    <option value="" disabled selected>Выберите категорию</option>
+                    {% for category in categories %}
+                        <option>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Цена</label>
+                <input type="number" name="price" class="form-control" placeholder="Введите цену" required>
+            </div>
+            <div class="form-group">
+                <label>Количество</label>
+                <input type="number" name="quantity_in_stock" class="form-control" placeholder="Введите количество" required>
+            </div>
+            <div class="form-group">
+                <label>Описание товара</label>
+                <input type="text" name="description" id="description" class="form-control" placeholder="Введите описание товара">
+            </div>
+            <h2 class="mt-4"></h2>
+            <button type="submit" class="btn btn-primary">Добавить товар</button>
+        </form>
+        <div id="add_appliance_messageContainer"></div>
+
+
+        <h2 class="mt-4">Добавить новый брэнд</h2>
+        <form class="mb-4" id="add_brand_Form">
+            <div class="form-group">
+                <label>Название брэнда</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Введите название бренда">
+            </div>
+            <div class="form-group">
+                <label>Описание брэнда</label>
+                <input type="text" name="description" id="description" class="form-control" placeholder="Введите описание бренда">
+            </div>
+            <h2 class="mt-4"></h2>
+            <button type="submit" class="btn btn-primary">Добавить брэнд</button>
+        </form>
+        <div id="add_brand_messageContainer"></div>
+
+
+        <h2 class="mt-4">Добавить новую категорию</h2>
+        <form class="mb-4" id="add_category_Form">
+            <div class="form-group">
+                <label>Название категории</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Введите название категории">
+            </div>
+            <div class="form-group">
+                <label>Описание категории</label>
+                <input type="text" name="description" id="description" class="form-control" placeholder="Введите описание категории">
+            </div>
+            <h2 class="mt-4"></h2>
+            <button type="submit" class="btn btn-primary">Добавить категорию</button>
+        </form>
+        <div id="add_category_messageContainer"></div>
+
+        <h2 class="mt-4">Сделать пользователя администратором</h2>
+        <form class="mb-4" id="add_admin_Form">
+            <div class="position-relative">
+                <input type="text" class="form-control" id="searchInput" name="username" placeholder="Начните вводить имя пользователя..." required>
+                <div class="list-group suggestions" id="suggestions" style="display: none;"></div>
+            </div>
+            <h2 class="mt-4"></h2>
+            <button type="submit" id="submitButton" class="btn btn-primary">Сделать администратором</button>
+        </form>
+        <div id="add_admin_messageContainer"></div>
+    </div>
+    <h2 class="mt-4"></h2>
+    <h2 class="mt-4"></h2>
+    <h2 class="mt-4"></h2>
+    </div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('#add_appliance_Form').on('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+        $.ajax({
+            type: 'POST',
+            url: '/home/add_appliance',
+            data: $(this).serialize(), // Сериализуем данные формы
+            success: function(response) {
+                // Отображаем сообщение об успешной отправке
+                $('#add_appliance_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                $('#add_appliance_Form')[0].reset();
+            },
+            error: function() {
+                // Обработка ошибок
+                $('#add_appliance_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
+            }
+        });
+    });
+});
+
+$(document).ready(function() {
+    $('#add_brand_Form').on('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+        $.ajax({
+            type: 'POST',
+            url: '/home/add_brand',
+            data: $(this).serialize(), // Сериализуем данные формы
+            success: function(response) {
+                // Отображаем сообщение об успешной отправке
+                $('#add_brand_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                $('#add_brand_Form')[0].reset();
+            },
+            error: function() {
+                // Обработка ошибок
+                $('#add_brand_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
+            }
+        });
+    });
+});
+$(document).ready(function() {
+    $('#add_category_Form').on('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+        $.ajax({
+            type: 'POST',
+            url: '/home/add_category',
+            data: $(this).serialize(), // Сериализуем данные формы
+            success: function(response) {
+                // Отображаем сообщение об успешной отправке
+                $('#add_category_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                $('#add_category_Form')[0].reset();
+            },
+            error: function() {
+                // Обработка ошибок
+                $('#add_category_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
+            }
+        });
+    });
+});
+
+const searchInput = $('#searchInput');
+const suggestionsContainer = $('#suggestions');
+const submitButton = $('#submitButton');
+let allSuggestions = []; // Массив для хранения всех подсказок
+
+// Функция для получения всех подсказок с сервера
+function fetchSuggestions() {
+    $.ajax({
+        url: '/home/add_admin', // Замените на ваш URL
+        method: 'GET',
+        success: function(data) {
+            allSuggestions = data; // Сохраняем все подсказки
+        },
+        error: function() {
+            console.error('Ошибка при получении подсказок');
+        }
+    });
+}
+
+// Получаем все подсказки при загрузке страницы
+$(document).ready(function() {
+    fetchSuggestions();
+});
+
+searchInput.on('input', function() {
+    const query = $(this).val().toLowerCase();
+    suggestionsContainer.empty(); // Очищаем предыдущие подсказки
+
+    if (query) {
+        // Фильтруем подсказки на основе введенного текста
+        const filteredSuggestions = allSuggestions.filter(item => item.toLowerCase().includes(query));
+        
+        if (filteredSuggestions.length > 0) {
+            filteredSuggestions.forEach(item => {
+                const suggestionItem = $('<a class="list-group-item list-group-item-action suggestion-item"></a>').text(item);
+                suggestionItem.on('click', function() {
+                    searchInput.val(item); // Устанавливаем выбранное значение в поле ввода
+                    suggestionsContainer.empty(); // Очищаем подсказки
+                    suggestionsContainer.hide(); // Скрываем подсказки
+                    submitButton.prop('disabled', false); // Активируем кнопку отправки
+                });
+                suggestionsContainer.append(suggestionItem);
+            });
+            suggestionsContainer.show(); // Показываем подсказки
+        } else {
+            suggestionsContainer.hide(); // Скрываем, если нет подсказок
+        }
+    } else {
+        suggestionsContainer.hide(); // Скрываем, если поле ввода пустое
+        submitButton.prop('disabled', true); // Деактивируем кнопку отправки
+    }
+});
+
+// Проверяем, соответствует ли введенное значение одной из подсказок
+searchInput.on('blur', function() {
+    const inputValue = $(this).val();
+    if (!allSuggestions.includes(inputValue)) {
+        $(this).val(''); // Очищаем поле ввода, если значение не соответствует
+        submitButton.prop('disabled', true); // Деактивируем кнопку отправки
+    }
+});
+
+// Скрываем подсказки при клике вне поля ввода
+$(document).on('click', function(event) {
+    if (!searchInput.is(event.target) && !suggestionsContainer.is(event.target) && suggestionsContainer.has(event.target).length === 0) {
+        suggestionsContainer.hide();
+    }
+});
+
+
+
+$(document).ready(function() {
+    $('#add_admin_Form').on('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+        $.ajax({
+            type: 'POST',
+            url: '/home/add_admin',
+            data: $(this).serialize(), // Сериализуем данные формы
+            success: function(response) {
+                // Отображаем сообщение об успешной отправке
+                $('#add_admin_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                $('#add_admin_Form')[0].reset();
+            },
+            error: function() {
+                // Обработка ошибок
+                $('#add_admin_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
