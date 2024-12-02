@@ -23,6 +23,12 @@
             max-height: 300px;
             overflow-y: auto;
         }
+        .divider {
+            height: 2px;
+            background-color: #555; /* Цвет разграничивающей полосы */
+            margin-top: 10px; /* Отступ сверху */
+            margin-bottom: 20px; /* Отступ снизу */
+        }
     </style>
 </head>
 <body>
@@ -34,11 +40,15 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <form action="/logout" method="POST" class="form-inline">
-                <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
-            </form>
+            <div class="ml-auto"> <!-- Используем ml-auto для выравнивания кнопки вправо -->
+                <form action="/logout" method="POST" class="form-inline">
+                    <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
+                </form>
+            </div>
         </div>
-    </nav>    
+    </nav>
+    
+    <div class="divider"></div> <!-- Разграничивающая полоса -->
     <div class="container mt-5">
         <h1 class="text-center">Управление базой данных</h1>
 
@@ -72,11 +82,20 @@
             </div>
             <div class="form-group">
                 <label>Количество</label>
-                <input type="number" name="quantity_in_stock" class="form-control" placeholder="Введите количество" required>
+                <input type="number" name="stock" class="form-control" placeholder="Введите количество" required>
             </div>
             <div class="form-group">
                 <label>Описание товара</label>
                 <input type="text" name="description" id="description" class="form-control" placeholder="Введите описание товара">
+            </div>
+            <div class="form-group">
+                <label>Магазины</label>
+                <select class="form-control" id="productSelect" name="shop" id="shop" required>
+                    <option value="" disabled selected>Выберите магазин</option>
+                    {% for shop in shops %}
+                        <option>{{ shop[1] }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <h2 class="mt-4"></h2>
             <button type="submit" class="btn btn-primary">Добавить товар</button>
@@ -112,6 +131,45 @@
             </table>
         </div>
         <div id="rmv_appliance_messageContainer"></div>
+
+        <h2 class="mt-4">Добавить новый магазин</h2>
+        <form class="mb-4" id="add_shop_Form">
+            <div class="form-group">
+                <label>Адрес магазина</label>
+                <input type="text" name="address" id="address" class="form-control" placeholder="Введите адрес магазина">
+            </div>
+            <h2 class="mt-4"></h2>
+            <button type="submit" class="btn btn-primary">Добавить магазин</button>
+        </form>
+        <div id="add_shop_messageContainer"></div>
+
+        <h2 class="mt-4">Удалить магазин</h2>
+        <div class="scrollable-container border">
+            <table class="table table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th>Адрес</th>
+                        <th>Удалить</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for shop in shops %}
+                    <tr id="row-{{ shop[0] }}">
+                        <td>{{ shop[1] }}</td>
+                        <td>
+                            <form class="mb-4 rmv_shop_Form">
+                                <div class="form-group">
+                                    <input type="hidden" name="shop_id" id="shop_id" value="{{ shop[0] }}">
+                                </div>
+                                <button type="submit" class="btn btn-danger">Удалить магазин</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="rmv_shop_messageContainer"></div>
 
         <h2 class="mt-4">Добавить новый брэнд</h2>
         <form class="mb-4" id="add_brand_Form">
@@ -253,24 +311,6 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    $('#add_admin_Form').on('submit', function(event) {
-        event.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url: '/home/add_admin',
-            data: $(this).serialize(),
-            success: function(response) {
-                $('#add_admin_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
-                $('#add_admin_Form')[0].reset();
-            },
-            error: function() {
-                $('#add_admin_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
-            }
-        });
-    });
-});
-
-$(document).ready(function() {
     $(document).on('submit', '.add_admin_Form', function(event) {
         event.preventDefault();
         const form = $(this);
@@ -285,6 +325,45 @@ $(document).ready(function() {
             },
             error: function() {
                 $('#add_admin_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error.</div>');
+            }
+        });
+    });
+});
+
+$(document).ready(function() {
+    $('#add_shop_Form').on('submit', function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '/home/add_shop',
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#add_shop_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                $('#add_shop_Form')[0].reset();
+            },
+            error: function() {
+                $('#add_shop_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
+            }
+        });
+    });
+});
+
+$(document).ready(function() {
+    $(document).on('submit', '.rmv_shop_Form', function(event) {
+        event.preventDefault();
+        const form = $(this);
+        const shop_id = form.find('input[id="shop_id"]').val();
+        console.log(shop_id);
+        $.ajax({
+            type: 'POST',
+            url: '/home/rmv_shop',
+            data: form.serialize(),
+            success: function(response) {
+                $('#row-' + shop_id).remove();
+                $('#rmv_shop_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+            },
+            error: function() {
+                $('#rmv_shop_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error.</div>');
             }
         });
     });

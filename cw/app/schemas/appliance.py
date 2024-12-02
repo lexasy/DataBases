@@ -6,4 +6,5 @@ class Appliance(BaseModel):
     brand: str
     category: str
     price: float
-    quantity_in_stock: int
+    stock: int
+    shop: str | None

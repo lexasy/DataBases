@@ -6,10 +6,11 @@ from database.actions_with_products import get_all_products, add_new_product, rm
 from database.actions_with_customers import validate_admin, get_all_customers, manage_admin
 from database.actions_with_brands import get_all_brands, add_new_brand
 from database.actions_with_categories import get_all_categories, add_new_category
+from database.actions_with_shops import get_all_shops, add_new_shop, rmv_shop
 from schemas.appliance import Appliance
 from schemas.brand import Brand
 from schemas.category import Category
-# from database.actions_with_products import insert_new_product
+from schemas.shop import Shop
 
 templates = Jinja2Templates(directory='templates')
 
@@ -24,6 +25,7 @@ async def return_home_html(request: Request):
     if user is None:
         return RedirectResponse(url='/login')
     products = await get_all_products()
+    shops = await get_all_shops()
     if await validate_admin(user) == user:
         brands = await get_all_brands()
         categories = await get_all_categories()
@@ -34,15 +36,14 @@ async def return_home_html(request: Request):
                                             "brands": brands,
                                             "categories": categories,
                                             "products": products,
-                                            "users": users
+                                            "users": users,
+                                            "shops": shops
                                         })
     return templates.TemplateResponse("home.html",
                                     {
                                         "request": request,
                                         "products": products
                                     })
-
-
 
 # ADMIN PANEL
 @router.post('/add_appliance')
@@ -58,6 +59,18 @@ async def rmv_appliance_query(request: Request,
                               appliance_id: int = Form()):
     await rmv_appliance(appliance_id)
     return {"message": "Товар был удален успешно!"}
+
+@router.post('/add_shop')
+async def add_new_shop_query(request: Request,
+                             shop: Shop = Form()):
+    await add_new_shop(shop)
+    return {"message": "Магазин был добавлен успешно!"}
+
+@router.post('/rmv_shop')
+async def rmv_shop_query(request: Request,
+                         shop_id: int = Form()):
+    await rmv_shop(shop_id)
+    return {"message": "Магазин был удален успешно!"}
 
 @router.post('/add_brand')
 async def add_new_brand_query(request: Request,

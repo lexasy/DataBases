@@ -57,8 +57,7 @@ async def create_appliance_table():
                 name varchar(100) not null,
                 brand_id bigint not null references brand(brand_id),
                 category_id bigint not null references category(category_id),
-                price bigint not null,
-                quantity_in_stock bigint not null,
+                price float not null,
                 description text
             )
         """
@@ -66,20 +65,63 @@ async def create_appliance_table():
     finally:
         await close_connection(conn)
 
-async def create_reservation_table():
-    """RESERVATION TABLE"""
+async def create_shop_table():
+    """SHOP TABLE"""
     conn = await create_connection();
     try:
-        query_reservation = """
-            CREATE TABLE IF NOT EXISTS reservation (
-                reservation_id bigint generated always as identity primary key,
-                customer_id bigint not null references customer(customer_id),
-                appliance_id bigint not null references appliance(appliance_id),
-                reservation_date date not null,
-                days_of_reservation bigint not null
+        query_shop = """
+            CREATE TABLE IF NOT EXISTS shop (
+                shop_id bigint generated always as identity primary key,
+                address text not null
             )
         """
-        await conn.execute(query_reservation)
+        await conn.execute(query_shop)
+    finally:
+        await close_connection(conn)
+
+async def create_order_table():
+    """ORDER TABLE"""
+    conn = await create_connection()
+    try:
+        query_order = """
+            CREATE TABLE IF NOT EXISTS basket (
+                bakset_id bigint generated always as identity primary key,
+                customer_id bigint not null references customer(customer_id),
+                date date not null,
+                status varchar(10) not null
+            )
+        """
+        await conn.execute(query_order)
+    finally:
+        await close_connection(conn)
+
+async def create_appliance_pool_table():
+    """APPLIANCE POOL TABLE"""
+    conn = await create_connection()
+    try:
+        query_appliance_pool = """
+            CREATE TABLE IF NOT EXISTS appliance_pool (
+                appliance_id bigint not null references appliance(appliance_id),
+                order_id bigint not null references basket(basket_id),
+                quantity bigint not null
+            )
+        """
+        await conn.execute(query_appliance_pool)
+    finally:
+        await close_connection(conn)
+
+async def create_stock_table():
+    """STOCK TABLE"""
+    conn = await create_connection()
+    try:
+        query_stock = """
+            CREATE TABLE IF NOT EXISTS stock (
+                appliance_id bigint not null references appliance(appliance_id),
+                shop_id bigint not null references shop(shop_id),
+                stock bigint not null
+            )
+        """
+        await conn.execute(query_stock)
     finally:
         await close_connection(conn)
 
@@ -88,5 +130,7 @@ async def tables_create():
     await create_brand_table()
     await create_category_table()
     await create_appliance_table()
-    await create_reservation_table()
-
+    await create_shop_table()
+    await create_order_table()
+    await create_appliance_pool_table()
+    await create_stock_table()
