@@ -6,7 +6,7 @@ async def get_all_products():
     conn = await create_connection()
     try:
         query = """
-            SELECT appliance.name, brand.name, category.name, price, quantity_in_stock 
+            SELECT appliance_id, appliance.name, brand.name, category.name, price, quantity_in_stock 
             FROM appliance JOIN brand using(brand_id)
             JOIN category using(category_id);
         """
@@ -31,6 +31,16 @@ async def add_new_product(appliance: Appliance):
             INSERT INTO appliance (name, brand_id, category_id, price, quantity_in_stock, description) VALUES ($1, $2, $3, $4, $5, $6)
         """
         await conn.execute(query, appliance.name, brand_id['brand_id'], category_id['category_id'], appliance.price, appliance.quantity_in_stock, appliance.description)
+    finally:
+        await close_connection(conn)
+
+async def rmv_appliance(appliance_id: int):
+    conn = await create_connection()
+    try:
+        query = """
+            DELETE FROM appliance WHERE appliance_id = $1
+        """
+        await conn.execute(query, appliance_id)
     finally:
         await close_connection(conn)
 

@@ -3,7 +3,7 @@ import asyncpg
 import asyncio
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv(override=True)
 
 DB_CONFIG = {
     "database": os.getenv("DB_NAME"),

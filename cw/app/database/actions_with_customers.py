@@ -50,19 +50,19 @@ async def validate_admin(customer_login: str):
     finally:
         await close_connection(conn)
 
-async def get_all_customers():
+async def get_all_customers(role: str):
     conn = await create_connection()
     try:
         query = """
-            SELECT customer_login FROM customer WHERE rights != $1
+            SELECT customer_login FROM customer WHERE rights = $1
         """
-        customers = await conn.fetch(query, "admin")
+        customers = await conn.fetch(query, role)
         result = [customer['customer_login'] for customer in customers]
         return result
     finally:
         await close_connection(conn)
 
-async def add_new_admin(customer_login: str):
+async def manage_admin(customer_login: str):
     conn = await create_connection()
     try:
         query = """
