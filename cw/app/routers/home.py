@@ -57,8 +57,9 @@ async def add_new_appliance_query(request: Request,
 
 @router.post('/rmv_appliance')
 async def rmv_appliance_query(request: Request,
-                              appliance_id: int = Form()):
-    await rmv_appliance(appliance_id)
+                              appliance_id: int = Form(),
+                              shop_id: int = Form()):
+    await rmv_appliance(appliance_id, shop_id)
     return {"message": "Товар был удален успешно!"}
 
 @router.post('/add_shop')

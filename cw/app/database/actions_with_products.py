@@ -7,7 +7,7 @@ async def get_all_products():
     try:
         # Достаем данные из вьюшки
         query = """
-            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, address
+            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id address
             FROM appliance_with_shop
         """
         products = await conn.fetch(query)
@@ -88,17 +88,21 @@ async def add_new_product(appliance: Appliance):
     finally:
         await close_connection(conn)
 
-async def rmv_appliance(appliance_id: int):
+async def rmv_appliance(appliance_id: int, shop_id: int):
     conn = await create_connection()
     try:
         query_stock = """
-            DELETE FROM stock WHERE appliance_id = $1
+            DELETE FROM stock WHERE appliance_id = $1 AND shop_id = $2
         """
-        await conn.execute(query_stock, appliance_id)
-        query = """
-            DELETE FROM appliance WHERE appliance_id = $1
+        await conn.execute(query_stock, appliance_id, shop_id)
+        query_check = """
+            SELECT appliance_id FROM stock WHERE appliance_id = $1
         """
-        await conn.execute(query, appliance_id)
+        if await conn.fetch(query_check, appliance_id) is None:
+            query = """
+                DELETE FROM appliance WHERE appliance_id = $1
+            """
+            await conn.execute(query, appliance_id)
     finally:
         await close_connection(conn)
 
