@@ -7,7 +7,7 @@ async def get_all_products():
     try:
         # Достаем данные из вьюшки
         query = """
-            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id address
+            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id, address
             FROM appliance_with_shop
         """
         products = await conn.fetch(query)
@@ -105,6 +105,22 @@ async def rmv_appliance(appliance_id: int, shop_id: int):
             await conn.execute(query, appliance_id)
     finally:
         await close_connection(conn)
+
+async def get_all_information_about_product(appliance_id: int, shop_id: int):
+    conn = await create_connection()
+    try:
+        query = """
+            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id, address
+            FROM appliance_with_shop
+            WHERE appliance_id = $1 AND shop_id = $2
+        """
+        product = await conn.fetchrow(query, appliance_id, shop_id)
+        if product is not None:
+            return tuple(product)
+        return product
+    finally:
+        await close_connection(conn)
+
 
 
 # asyncio.run(get_all_products())

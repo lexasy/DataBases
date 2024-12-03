@@ -27,7 +27,7 @@ async def login(request: Request,
     if not customer_login:
         raise HTTPException(status_code=400, detail="Invalid username or password")
     customer_id = await get_customer_id(customer.customer_login)
-    access_token = await create_access_token(customer_login, str(customer_id))
+    access_token = await create_access_token(customer_login, customer_id['customer_id'])
     response = RedirectResponse(url='/home', status_code=302)
     response.set_cookie(key="access_token", value=access_token, max_age=datetime.utcnow() + timedelta(hours=1))
     return response

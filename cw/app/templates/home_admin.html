@@ -7,18 +7,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- <link rel="stylesheet" href="/static/css/styles.css" -->
     <style>
-        .suggestions {
-            position: absolute;
-            z-index: 1000;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        .suggestion-item {
-            cursor: pointer;
-        }
-        .suggestion-item:hover {
-            background-color: #f0f0f0;
-        }
         .scrollable-container {
             max-height: 300px;
             overflow-y: auto;
@@ -115,7 +103,7 @@
                 </thead>
                 <tbody>
                     {% for product in products %}
-                    <tr id="row-{{ product[0] }}&{{ product[6] }}">
+                    <tr id="row-{{ product[0] }}a{{ product[6] }}">
                         <td>{{ product[1] }}</td>
                         <td>{{ product[2] }}</td>
                         <td>{{ product[7] }}</td>
@@ -268,7 +256,7 @@ $(document).ready(function() {
             url: '/home/rmv_appliance',
             data: form.serialize(),
             success: function(response) {
-                $('#row-' + applianceId + shopId).remove();
+                $('#row-' + applianceId + 'a' + shopId).remove();
                 $('#rmv_appliance_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
             },
             error: function() {

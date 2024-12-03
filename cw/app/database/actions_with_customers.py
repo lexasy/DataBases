@@ -40,13 +40,13 @@ async def get_customer_id(customer_login: str):
     finally:
         await close_connection(conn)
 
-async def validate_admin(customer_login: str):
+async def validate_admin(customer_id: int):
     conn = await create_connection()
     try:
-        customer = await conn.fetchrow('SELECT customer_login FROM customer WHERE customer_login = $1 AND rights = $2', customer_login, "admin")
+        customer = await conn.fetchrow('SELECT customer_id FROM customer WHERE customer_id = $1 AND rights = $2', customer_id, "admin")
         if customer is None:
             return None
-        return customer['customer_login']
+        return customer['customer_id']
     finally:
         await close_connection(conn)
 

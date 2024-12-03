@@ -11,7 +11,7 @@ async def get_current_user(request: Request):
         return token
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get('sub')
-        return username
+        user_id: int = payload.get('id')
+        return user_id
     except JWTError as e:
         return None
