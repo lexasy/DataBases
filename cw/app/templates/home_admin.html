@@ -282,8 +282,12 @@ $(document).ready(function() {
             url: '/home/add_brand',
             data: $(this).serialize(),
             success: function(response) {
-                $('#add_brand_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
-                $('#add_brand_Form')[0].reset();
+                if (response.status == "OK") {
+                    $('#add_brand_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                    $('#add_brand_Form')[0].reset();
+                } else {
+                    $('#add_brand_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">' + response.message + '</div>');
+                }
             },
             error: function() {
                 $('#add_brand_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
@@ -300,8 +304,12 @@ $(document).ready(function() {
             url: '/home/add_category',
             data: $(this).serialize(),
             success: function(response) {
-                $('#add_category_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
-                $('#add_category_Form')[0].reset();
+                if (response.status == "OK") {
+                    $('#add_category_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                    $('#add_category_Form')[0].reset();
+                } else {
+                    $('#add_category_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">' + response.message + '</div>');
+                }
             },
             error: function() {
                 $('#add_category_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');
@@ -338,8 +346,12 @@ $(document).ready(function() {
             url: '/home/add_shop',
             data: $(this).serialize(),
             success: function(response) {
-                $('#add_shop_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
-                $('#add_shop_Form')[0].reset();
+                if (response.status == "OK") {
+                    $('#add_shop_messageContainer').html('<div class="alert alert-success mt-3" role="alert">' + response.message + '</div>');
+                    $('#add_shop_Form')[0].reset();
+                } else {
+                    $('#add_shop_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">' + response.message + '</div>');
+                }
             },
             error: function() {
                 $('#add_shop_messageContainer').html('<div class="alert alert-danger mt-3" role="alert">Error occurred while adding item.</div>');

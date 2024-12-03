@@ -24,4 +24,17 @@ async def add_new_category(category: Category):
     finally:
         await close_connection(conn)
 
+async def category_unique_checking(category: Category) -> bool:
+    conn = await create_connection()
+    try:
+        query = """
+            SELECT category_id FROM category WHERE name = $1
+        """
+        result = await conn.fetchrow(query, category.name)
+        if result is not None:
+            return False
+        return True
+    finally:
+        await close_connection(conn)
+
 # asyncio.run(get_all_categories())

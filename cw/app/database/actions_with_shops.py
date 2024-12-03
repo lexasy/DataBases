@@ -36,3 +36,16 @@ async def rmv_shop(shop_id: int):
         await conn.execute(query, shop_id)
     finally:
         await close_connection(conn)
+
+async def shop_unique_checking(shop: Shop) -> bool:
+    conn = await create_connection()
+    try:
+        query = """
+            SELECT shop_id FROM shop WHERE address = $1
+        """
+        result = await conn.fetchrow(query, shop.address)
+        if result is not None:
+            return False
+        return True
+    finally:
+        await close_connection(conn)

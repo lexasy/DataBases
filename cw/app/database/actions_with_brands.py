@@ -24,4 +24,17 @@ async def add_new_brand(brand: Brand):
     finally:
         await close_connection(conn)
 
+async def brand_unique_checking(brand: Brand) -> bool:
+    conn = await create_connection()
+    try:
+        query = """
+            SELECT brand_id FROM brand WHERE name = $1
+        """
+        result = await conn.fetchrow(query, brand.name)
+        if result is not None:
+            return False
+        return True
+    finally:
+        await close_connection(conn)
+
 # asyncio.run(get_all_brands())

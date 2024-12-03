@@ -16,6 +16,40 @@ async def get_all_products():
     finally:
         await close_connection(conn)
 
+async def appliance_unique_checking(appliance: Appliance):
+    conn = await create_connection()
+    try:
+        brand_query = """
+            SELECT brand_id FROM brand WHERE name = $1
+        """
+        brand_id = await conn.fetchrow(brand_query, appliance.brand)
+        category_query = """
+            SELECT category_id FROM category WHERE name = $1
+        """
+        category_id = await conn.fetchrow(category_query, appliance.category)
+        query = """
+            SELECT name FROM brand WHERE name = $1 AND brand_id = $2 AND category_id = $3 AND price = $4
+        """
+        result = await conn.fetchrow(query, appliance.name, brand_id['brand_id'], category_id['category_id'], appliance.price)
+        if result is not None:
+            return False
+        return True
+    finally:
+        await close_connection(conn)
+
+async def appliance_in_shop_unique_checking(appliance: Appliance) -> bool:
+    conn = await create_connection()
+    try:
+        query = """
+            SELECT appliance_id FROM appliance_with_shop WHERE appliance_name = $1 AND brand_name = $2 AND address = $3 AND category_name = $4 AND price = $5
+        """
+        result = await conn.fetchrow(query, appliance.name, appliance.brand, appliance.shop, appliance.category, appliance.price)
+        if result is not None:
+            return False
+        return True
+    finally:
+        await close_connection(conn)
+
 async def add_new_product(appliance: Appliance):
     conn = await create_connection()
     try:
@@ -27,10 +61,12 @@ async def add_new_product(appliance: Appliance):
             SELECT category_id FROM category WHERE name = $1
         """
         category_id = await conn.fetchrow(category_id_query, appliance.category)
-        appliance_query = """
-            INSERT INTO appliance (name, brand_id, category_id, price, description) VALUES ($1, $2, $3, $4, $5)
-        """
-        await conn.execute(appliance_query, appliance.name, brand_id['brand_id'], category_id['category_id'], appliance.price, appliance.description)
+        # Проверяем на уникальность в таблице техники по бренду и наименованию
+        if await appliance_unique_checking(appliance):
+            appliance_query = """
+                INSERT INTO appliance (name, brand_id, category_id, price, description) VALUES ($1, $2, $3, $4, $5)
+            """
+            await conn.execute(appliance_query, appliance.name, brand_id['brand_id'], category_id['category_id'], appliance.price, appliance.description)
         shop_id_query = """
             SELECT shop_id FROM shop WHERE address = $1
         """
@@ -39,10 +75,16 @@ async def add_new_product(appliance: Appliance):
             SELECT appliance_id FROM appliance WHERE name = $1 AND brand_id = $2
         """
         appliance_id = await conn.fetchrow(appliance_id_query, appliance.name, brand_id['brand_id'])
-        query = """
-            INSERT INTO stock (appliance_id, shop_id, stock) VALUES ($1, $2, $3)
-        """
-        await conn.execute(query, appliance_id['appliance_id'], shop_id['shop_id'], appliance.stock)
+        if await appliance_in_shop_unique_checking(appliance):
+            query = """
+                INSERT INTO stock (appliance_id, shop_id, stock) VALUES ($1, $2, $3)
+            """
+            await conn.execute(query, appliance_id['appliance_id'], shop_id['shop_id'], appliance.stock)
+        else:
+            query = """
+                UPDATE stock SET stock = stock + $1 WHERE appliance_id = $2 AND shop_id = $3
+            """
+            await conn.execute(query, appliance.stock, appliance_id['appliance_id'], shop_id['shop_id'])
     finally:
         await close_connection(conn)
 
