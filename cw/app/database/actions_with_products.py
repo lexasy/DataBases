@@ -28,7 +28,7 @@ async def appliance_unique_checking(appliance: Appliance):
         """
         category_id = await conn.fetchrow(category_query, appliance.category)
         query = """
-            SELECT name FROM brand WHERE name = $1 AND brand_id = $2 AND category_id = $3 AND price = $4
+            SELECT appliance_id FROM appliance WHERE name = $1 AND brand_id = $2 AND category_id = $3 AND price = $4
         """
         result = await conn.fetchrow(query, appliance.name, brand_id['brand_id'], category_id['category_id'], appliance.price)
         if result is not None:
