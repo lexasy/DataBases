@@ -47,3 +47,46 @@ async def add_to_basket(appliance_id: int, shop_id: int, stock: int, customer_id
             await conn.execute(query_stock_delete, appliance_id, shop_id)
     finally:
         await close_connection(conn)
+
+async def get_all_information_about_basket(user_id: int):
+    conn = await create_connection()
+    try:
+        basket_query = """
+            SELECT basket_id FROM basket WHERE customer_id = $1 AND status = $2
+        """
+        basket_id = await conn.fetchrow(basket_query, user_id, "open")
+        if basket_id is None:
+            return basket_id
+        query = """
+            SELECT basket_id, appliance_id, appliance_name, brand_id, brand_name, quantity
+            FROM appliance_in_basket
+            WHERE basket_id = $1
+        """
+        basket = await conn.fetch(query, basket_id['basket_id'])
+        result = [tuple(product) for product in basket]
+        return result
+    finally:
+        await close_connection(conn)
+
+async def get_basket_id(customer_id: int):
+    conn = await create_connection()
+    try:
+        query = """
+            SELECT basket_id FROM basket WHERE customer_id = $1 AND status = $2
+        """
+        basket_id = await conn.fetchrow(query, customer_id, "open")
+        if basket_id is None:
+            return basket_id
+        return basket_id['basket_id']
+    finally:
+        await close_connection(conn)
+
+async def make_order(basket_id: int):
+    conn = await create_connection()
+    try:
+        query = """
+            UPDATE basket SET status = $1 WHERE basket_id = $2
+        """
+        await conn.execute(query, "close", basket_id)
+    finally:
+        await close_connection(conn)

@@ -31,13 +31,17 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <div class="ml-auto"> <!-- Используем ml-auto для выравнивания кнопки вправо -->
-                <form action="/logout" method="POST" class="form-inline">
+            <div class="ml-auto d-flex">
+                <form action="/basket" method="GET" class="form-inline">
+                    <button type="submit" class="btn btn-outline-primary my-2 my-sm-0">🛒 Корзина</button>
+                </form>
+                <form action="/logout" method="POST" class="form-inline ml-2"> <!-- Добавляем класс ml-2 для отступа между кнопками -->
                     <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
                 </form>
             </div>
         </div>
     </nav>
+    
     
     <div class="divider"></div> <!-- Разграничивающая полоса -->
     <div class="container mt-5">

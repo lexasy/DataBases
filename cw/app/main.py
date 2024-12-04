@@ -1,7 +1,7 @@
 import asyncio
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
-from routers import registration, login, home, products
+from routers import registration, login, home, products, basket
 from database.table_creation import tables_create
 
 app = FastAPI()
@@ -10,6 +10,7 @@ app.include_router(registration.router)
 app.include_router(login.router)
 app.include_router(home.router)
 app.include_router(products.router)
+app.include_router(basket.router)
 
 # asyncio.run(tables_create())
 
