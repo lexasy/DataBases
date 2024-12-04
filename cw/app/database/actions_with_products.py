@@ -95,14 +95,6 @@ async def rmv_appliance(appliance_id: int, shop_id: int):
             DELETE FROM stock WHERE appliance_id = $1 AND shop_id = $2
         """
         await conn.execute(query_stock, appliance_id, shop_id)
-        query_check = """
-            SELECT appliance_id FROM stock WHERE appliance_id = $1
-        """
-        if await conn.fetch(query_check, appliance_id) is None:
-            query = """
-                DELETE FROM appliance WHERE appliance_id = $1
-            """
-            await conn.execute(query, appliance_id)
     finally:
         await close_connection(conn)
 
