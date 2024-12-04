@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Страница продукта</title>
+    <title>Корзина товаров</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- <link rel="stylesheet" href="/static/css/styles.css" -->
     <style>
@@ -28,7 +28,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="ml-auto"> <!-- Используем ml-auto для выравнивания кнопки вправо -->
                 <form action="/logout" method="POST" class="form-inline">
-                    <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">Логаут</button>
+                    <button type="submit" class="btn btn-outline-danger my-2 my-sm-0">⭕ Выход</button>
                 </form>
             </div>
         </div>
@@ -37,6 +37,7 @@
     <div class="divider"></div> <!-- Разграничивающая полоса -->
     <div class="container mt-5">
         <h2 class="mt-4">Корзина товаров</h2>
+        {% if basket %}
         <div class="scrollable-container border">
             <table class="table table-bordered mb-0">
                 <thead>
@@ -46,17 +47,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% if basket %}
                     {% for product in basket %}
                     <tr id="row-{{ product[1] }}">
                         <td>{{ product[2] }} {{ product[4] }}</td>
                         <td>{{ product[5] }}</td>
                     </tr>
                     {% endfor %}
-                    {% endif %}
                 </tbody>
             </table>
         </div>
+        {% else %}
+        Корзина пуста
+        {% endif %}
         {% if basket_id %}
         <form class="mb-4 make_order_Form">
             <div class="form-group">
