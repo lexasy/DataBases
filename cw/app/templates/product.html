@@ -48,7 +48,7 @@
         <form class="mb-4" id="add_appliance_to_basket_Form">
             <div class="form-group">
                 <label>Количество</label>
-                <input type="number" name="stock" class="form-control" placeholder="Введите количество" required>
+                <input type="number" name="stock" class="form-control" placeholder="Введите количество" min="1" required>
                 <input type="hidden" name="appliance_id" id="appliance_id" value="{{ product[0] }}">
                 <input type="hidden" name="shop_id" id="shop_id" value="{{ product[6] }}">
             </div>
