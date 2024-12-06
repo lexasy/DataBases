@@ -25,7 +25,7 @@ async def login(request: Request,
     customer: CustomerSimple = Form()):
     customer_login = await authentificate_customer(customer)
     if not customer_login:
-        raise HTTPException(status_code=400, detail="Invalid username or password")
+        raise HTTPException(status_code=400, detail="Неправильный логин или пароль!")
     customer_id = await get_customer_id(customer.customer_login)
     access_token = await create_access_token(customer_login, customer_id['customer_id'])
     response = RedirectResponse(url='/home', status_code=302)
