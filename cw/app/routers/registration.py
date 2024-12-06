@@ -26,8 +26,11 @@ async def register(request: Request,
     customer: Customer = Form()):
     existing_customer = await get_customer(customer.customer_login)
     if existing_customer:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    await create_customer(customer)
+        raise HTTPException(status_code=400, detail="Пользователь с таким логином уже зарегестрирован!")
+    try:
+        await create_customer(customer)
+    except:
+        raise HTTPException(status_code=400, detail="Пароль или логин слишком короткий!")
     customer_id = await get_customer_id(customer.customer_login)
     access_token = await create_access_token(customer.customer_login, customer_id['customer_id'])
     response = RedirectResponse(url='/home', status_code=302)

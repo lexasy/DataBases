@@ -155,8 +155,8 @@ $(document).ready(function() {
             },
             error: function(jqXHR) {
                 if (jqXHR.status === 400) {
-                  console.log("ppp");
-                  $('#errorMessage').html('<div id="error-message" style="color: red;">Пользователь с таким логином уже зарегестрирован!</div>');
+                  var errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.detail : jqXHR.responseText;
+                  $('#errorMessage').html('<div id="error-message" style="color: red;">' + errorMessage + '</div>');
                 }
             }
         });
