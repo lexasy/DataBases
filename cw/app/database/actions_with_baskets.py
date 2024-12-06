@@ -1,4 +1,4 @@
-from database.connect import create_connection, close_connection
+from database.connect import create_connection, create_slave_connection, close_connection
 from datetime import datetime
 
 async def add_to_basket(appliance_id: int, shop_id: int, stock: int, customer_id: int):
@@ -49,7 +49,7 @@ async def add_to_basket(appliance_id: int, shop_id: int, stock: int, customer_id
         await close_connection(conn)
 
 async def get_all_information_about_basket(basket_id: int):
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT basket_id, appliance_id, appliance_name, brand_id, brand_name, price, quantity
@@ -63,7 +63,7 @@ async def get_all_information_about_basket(basket_id: int):
         await close_connection(conn)
 
 async def get_basket_id(customer_id: int):
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT basket_id FROM basket WHERE customer_id = $1 AND status = $2
@@ -87,7 +87,7 @@ async def make_order(basket_id: int):
 
 # использование функции SQL
 async def get_basket_price(basket_id: int):
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT get_basket_price($1)

@@ -1,9 +1,9 @@
-from database.connect import create_connection, close_connection
+from database.connect import create_connection, create_slave_connection, close_connection
 from schemas.appliance import Appliance
 import asyncio
 
 async def get_all_products():
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         # Достаем данные из вьюшки
         query = """
@@ -17,7 +17,7 @@ async def get_all_products():
         await close_connection(conn)
 
 async def appliance_unique_checking(appliance: Appliance):
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         brand_query = """
             SELECT brand_id FROM brand WHERE name = $1
@@ -38,7 +38,7 @@ async def appliance_unique_checking(appliance: Appliance):
         await close_connection(conn)
 
 async def appliance_in_shop_unique_checking(appliance: Appliance) -> bool:
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT appliance_id FROM appliance_with_shop WHERE appliance_name = $1 AND brand_name = $2 AND address = $3 AND category_name = $4 AND price = $5
@@ -99,7 +99,7 @@ async def rmv_appliance(appliance_id: int, shop_id: int):
         await close_connection(conn)
 
 async def get_all_information_about_product(appliance_id: int, shop_id: int):
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id, address

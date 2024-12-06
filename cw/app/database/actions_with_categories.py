@@ -1,9 +1,9 @@
-from database.connect import create_connection, close_connection
+from database.connect import create_connection, create_slave_connection, close_connection
 from schemas.category import Category
 import asyncio
 
 async def get_all_categories():
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT name FROM category
@@ -25,7 +25,7 @@ async def add_new_category(category: Category):
         await close_connection(conn)
 
 async def category_unique_checking(category: Category) -> bool:
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT category_id FROM category WHERE name = $1

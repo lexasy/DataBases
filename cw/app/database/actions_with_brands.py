@@ -1,9 +1,9 @@
-from database.connect import create_connection, close_connection
+from database.connect import create_connection, create_slave_connection, close_connection
 from schemas.brand import Brand
 import asyncio
 
 async def get_all_brands():
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT name FROM brand
@@ -25,7 +25,7 @@ async def add_new_brand(brand: Brand):
         await close_connection(conn)
 
 async def brand_unique_checking(brand: Brand) -> bool:
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT brand_id FROM brand WHERE name = $1

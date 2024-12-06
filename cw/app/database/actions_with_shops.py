@@ -1,8 +1,8 @@
-from database.connect import create_connection, close_connection
+from database.connect import create_connection, create_slave_connection, close_connection
 from schemas.shop import Shop
 
 async def get_all_shops():
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT shop_id, address from shop
@@ -38,7 +38,7 @@ async def rmv_shop(shop_id: int):
         await close_connection(conn)
 
 async def shop_unique_checking(shop: Shop) -> bool:
-    conn = await create_connection()
+    conn = await create_slave_connection()
     try:
         query = """
             SELECT shop_id FROM shop WHERE address = $1

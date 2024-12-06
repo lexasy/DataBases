@@ -118,3 +118,23 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER appliance_pool_add_trigger
 AFTER INSERT OR UPDATE ON appliance_pool
 FOR EACH ROW EXECUTE FUNCTION log_appliance_pool_changes();
+
+-- Создание юзера с возможностью чтения
+CREATE ROLE slave_user WITH LOGIN PASSWORD 'qwerty';
+
+-- Даем доступ на чтение таблиц
+GRANT SELECT ON appliance TO slave_user;
+GRANT SELECT ON appliance_pool TO slave_user;
+GRANT SELECT ON basket TO slave_user;
+GRANT SELECT ON brand TO slave_user;
+GRANT SELECT ON category TO slave_user;
+GRANT SELECT ON customer TO slave_user;
+GRANT SELECT ON shop TO slave_user;
+GRANT SELECT ON stock TO slave_user;
+
+-- Даем доступ на чтение вьюшек
+GRANT SELECT ON appliance_in_basket TO slave_user;
+GRANT SELECT ON appliance_with_shop TO slave_user;
+
+-- Даем доступ на исполнение функций
+GRANT EXECUTE ON FUNCTION get_basket_price TO slave_user;
