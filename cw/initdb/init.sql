@@ -68,7 +68,7 @@ join appliance using(appliance_id)
 join brand using(brand_id);
 
 create or replace view appliance_with_shop
-as select appliance.appliance_id, appliance.name appliance_name, brand.name brand_name, category.name category_name, appliance.price, stock.stock, stock.shop_id, shop.address
+as select appliance.appliance_id, appliance.name appliance_name, brand.name brand_name, category.name category_name, appliance.price, stock.stock, stock.shop_id, shop.address, appliance.description appliance_description, brand.description brand_description, category.description category_description
 from appliance join brand using(brand_id)
 join category using(category_id)
 join stock using(appliance_id)
