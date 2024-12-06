@@ -42,7 +42,16 @@
     <div class="divider"></div> <!-- Разграничивающая полоса -->
     <div class="container mt-5">
         <h1 id="product-name">{{ product[1] }} {{ product[2] }}</h1>
+        {% if product[8] %}
+        <p><strong>Описание продукта:</strong> <span id="product-descrption">{{ product[8] }}</span></p>
+        {% endif %}
+        {% if product[9] %}
+        <p><strong>Описание бренда:</strong> <span id="product-brand-description">{{ product[9] }}</span></p>
+        {% endif %}
         <p><strong>Категория:</strong> <span id="product-category">{{ product[3] }}</span></p>
+        {% if product[10] %}
+        <p><strong>Описание категории:</strong> <span id="product-category-description">{{ product[10] }}</span></p>
+        {% endif %}
         <p><strong>Цена:</strong> <span id="product-price">{{ product[4] }}</span> руб.</p>
         <p><strong>Остаток на складе:</strong> <span id="product-stock">{{ product[5] }}</span> шт.</p>
         <form class="mb-4" id="add_appliance_to_basket_Form">

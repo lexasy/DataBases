@@ -102,7 +102,7 @@ async def get_all_information_about_product(appliance_id: int, shop_id: int):
     conn = await create_slave_connection()
     try:
         query = """
-            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id, address
+            SELECT appliance_id, appliance_name, brand_name, category_name, price, stock, shop_id, address, appliance_description, brand_description, category_description
             FROM appliance_with_shop
             WHERE appliance_id = $1 AND shop_id = $2
         """
